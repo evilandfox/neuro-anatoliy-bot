@@ -1,18 +1,27 @@
 {
-	"name": "neuro-anatoliy-bot",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest",
-		"cf-typegen": "wrangler types"
-	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"typescript": "^5.5.2",
-		"vitest": "~3.2.0",
-		"wrangler": "^4.26.0"
-	}
+  "name": "neuro-anatoliy-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dev:expose": "lt --port 8787 --subdomain dev-neuro-anatoliy",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.57",
+    "dotenv": "^17.2.1",
+    "localtunnel": "^2.0.2",
+    "openai": "^5.10.2",
+    "puppeteer": "^24.15.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.26.0"
+  },
+  "dependencies": {
+    "grammy": "^1.37.0"
+  }
 }

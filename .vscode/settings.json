@@ -1,5 +1,10 @@
 {
-	"files.associations": {
-		"wrangler.json": "jsonc"
-	}
+  "files.associations": {
+    "wrangler.json": "jsonc"
+  },
+  "prettier.enable": true,
+"editor.defaultFormatter": "esbenp.prettier-vscode",
+"[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
 }
