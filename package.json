@@ -6,7 +6,6 @@
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "dev:expose": "lt --port 8787 --subdomain dev-neuro-anatoliy",
     "test": "vitest",
     "cf-typegen": "wrangler types"
   },
@@ -22,6 +21,8 @@
     "wrangler": "^4.26.0"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.10",
+    "drizzle-orm": "^0.44.4",
     "grammy": "^1.37.0"
   }
 }
