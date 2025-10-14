@@ -170,3 +170,8 @@ dist
 
 .dev.vars
 .wrangler/
+
+# personal
+build-products
+database.db
+scripts/rclone.exe

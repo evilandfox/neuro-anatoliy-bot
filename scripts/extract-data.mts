@@ -28,7 +28,7 @@ export async function extractData(url: string): Promise<PageExtractedData> {
     const data = (await page.evaluate(() => {
       const getText = (selector: string): string => {
         const el = document.querySelector<HTMLElement>(selector)
-        return el ? el.textContent!.trim() : ''
+        return el?.textContent?.trim() ?? ''
       }
 
       /** Собирает текст до следующего заголовка */

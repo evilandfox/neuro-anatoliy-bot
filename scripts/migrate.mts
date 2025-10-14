@@ -1,7 +1,7 @@
 import { migrate } from 'drizzle-orm/libsql/migrator'
 import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
-import * as schema from '../src/schema.mjs'
+import * as schema from '../src/db/schema.js'
 
 async function main() {
   const db = drizzle(

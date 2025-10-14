@@ -7,11 +7,15 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "test": "vitest",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.57",
     "dotenv": "^17.2.1",
+    "drizzle-kit": "^0.31.5",
+    "html-entities": "^2.6.0",
     "localtunnel": "^2.0.2",
     "openai": "^5.10.2",
     "puppeteer": "^24.15.0",
@@ -21,8 +25,8 @@
     "wrangler": "^4.26.0"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.10",
-    "drizzle-orm": "^0.44.4",
+    "@libsql/client": "^0.15.15",
+    "drizzle-orm": "^0.44.6",
     "grammy": "^1.37.0"
   }
 }
