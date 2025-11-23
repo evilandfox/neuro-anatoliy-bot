@@ -8,25 +8,31 @@
     "dev": "wrangler dev",
     "test": "vitest",
     "cf-typegen": "wrangler types",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "rag:prepare-db": "tsx scripts/rag/prepare-db.ts",
+    "rag:scrape": "tsx scripts/rag/scrape.ts",
+    "rag:generate": "tsx scripts/rag/generate.mts",
+    "rag:upload": "tsx scripts/rag/upload.mts",
+    "tgbot:setWebhookUrl:local": "tsx scripts/tgbot/setWebhookUrl/local.ts",
+    "tgbot:setWebhookUrl:production": "tsx scripts/tgbot/setWebhookUrl/production.ts"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.8.57",
-    "dotenv": "^17.2.1",
-    "drizzle-kit": "^0.31.5",
+    "@cloudflare/vitest-pool-workers": "^0.8.71",
+    "dotenv": "^17.2.3",
+    "drizzle-kit": "^0.31.7",
     "html-entities": "^2.6.0",
+    "json5": "^2.2.3",
     "localtunnel": "^2.0.2",
-    "openai": "^5.10.2",
-    "puppeteer": "^24.15.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
+    "openai": "^5.23.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
     "vitest": "~3.2.0",
-    "wrangler": "^4.26.0"
+    "wrangler": "^4.50.0"
   },
   "dependencies": {
+    "@grammyjs/auto-chat-action": "^0.1.1",
     "@libsql/client": "^0.15.15",
-    "drizzle-orm": "^0.44.6",
-    "grammy": "^1.37.0"
+    "drizzle-orm": "^0.44.7",
+    "grammy": "^1.38.4"
   }
 }

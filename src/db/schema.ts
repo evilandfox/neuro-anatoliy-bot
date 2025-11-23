@@ -28,6 +28,7 @@ export const categories = sqliteTable('categories', {
 export const products = sqliteTable('products', {
   id: integer('id').primaryKey(),
   name: text('name').notNull(),
+  url: text('url').notNull(),
   data: text('data', { mode: 'json' }).$type<IProductData>().notNull(),
   createdAt: integer('created_at', { mode: 'timestamp_ms' })
     .notNull()

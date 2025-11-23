@@ -172,6 +172,6 @@ dist
 .wrangler/
 
 # personal
-build-products
-database.db
-scripts/rclone.exe
+/sw-products
+/database.db
+/rag
