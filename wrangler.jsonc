@@ -7,9 +7,7 @@
   "name": "neuro-anatoliy-bot",
   "main": "src/index.ts",
   "compatibility_date": "2025-07-26",
-  "observability": {
-    "enabled": true
-  },
+  "logpush": true,
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -55,7 +53,8 @@
     {
       "binding": "DB",
       "database_name": "siberian-wellness",
-      "database_id": "76ba1c8b-5f41-4773-8dd7-7a9306081627"
+      "database_id": "76ba1c8b-5f41-4773-8dd7-7a9306081627",
+      "remote": true
     }
   ],
 

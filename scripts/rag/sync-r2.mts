@@ -9,9 +9,8 @@ import { fileURLToPath } from 'node:url'
 
 // --- CONFIGURATION START ---
 const R2_ACCOUNT_ID = 'd0c578de9055091ee5b9e082e9f4ea02'
-const R2_ACCESS_KEY_ID = '57466bf8e5dd3710f51084951a7b7327'
-const R2_SECRET_ACCESS_KEY =
-  '8c1e3b4369562fd1d40a4bdd282a62a7e9fb91bff15539a406fe1f4151b1f7cc'
+const R2_ACCESS_KEY_ID = '56c116d064ff7b3a08bdcf2046185739'
+const R2_SECRET_ACCESS_KEY = '3bfb8dc96d9b446d25048e3a99bfdbeed76f395747d248134ea729ca99b8cda9'
 const R2_BUCKET_NAME = 'syberian-wellness-products'
 // --- CONFIGURATION END ---
 
@@ -22,6 +21,7 @@ const __dirname = path.dirname(__filename)
 const RCLONE_PATH = path.resolve(__dirname, '../utils/rclone.exe')
 
 async function main() {
+  // Получаем путь к папке из аргументов командной строки
   const targetDir = 'rag/r2-products'
 
   const absoluteTargetDir = path.resolve(process.cwd(), targetDir)

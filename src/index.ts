@@ -20,6 +20,7 @@ import { systemPrompt } from './systemPrompt'
 import { drizzle } from 'drizzle-orm/d1'
 import * as schema from './db/schema'
 import { inArray } from 'drizzle-orm'
+import productLinks from './product-links.json'
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -55,35 +56,30 @@ export default {
           Number
         )
         if (productIds.length > 0) {
-          const db = drizzle(env.DB, { schema })
-          const products = await db.query.products.findMany({
-            where: inArray(schema.products.id, productIds),
-            columns: {
-              id: true,
-              url: true,
-            },
+          text = text.replace(/\[(.+?)\]\((.+?)\)/g, (_, name, id) => {
+            const link = productLinks[id as keyof typeof productLinks]
+            if (link) {
+              const referral = Math.random() > 0.5 ? 2009007717 : 2603169025
+              return `[*${name}*](${link}?referral=${referral})`
+            }
+            return `*${name}*`
           })
-          console.log(products)
-          const productsMap = Object.fromEntries(
-            products.map((product) => [
-              product.id,
-              `${product.url}?referral=2603169025`,
-            ])
-          )
-          text = text.replace(
-            /(?<=\[.+?\]\().+?(?=\))/g,
-            (id) => productsMap[id] ?? id
-          )
         }
 
         try {
           return ctx.reply(text, {
             parse_mode: 'MarkdownV2',
+            link_preview_options: {
+              is_disabled: true,
+            },
           })
         } catch (e) {
           console.error('sendMessage failback', e)
           return ctx.reply(text, {
             parse_mode: 'Markdown',
+            link_preview_options: {
+              is_disabled: true,
+            },
           })
         }
       } catch (error) {
