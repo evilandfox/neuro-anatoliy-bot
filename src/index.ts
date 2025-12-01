@@ -28,6 +28,10 @@ export default {
 
     bot.use(autoChatAction())
 
+    bot.command('start', async (ctx) => {
+      return ctx.reply('Привет! Я бот, который поможет тебе с твоими проблемами.')
+    })
+
     bot.on('message', async (ctx) => {
       const message = ctx.message.text
       if (!message) {
@@ -44,7 +48,6 @@ export default {
           max_num_results: 3,
           rewrite_query: true,
         })
-        console.log(results.response)
 
         let text = results.response
           .replace(/\!/g, '\\!')

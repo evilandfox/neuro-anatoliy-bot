@@ -16,5 +16,6 @@
 npm run rag:prepare-db
 npm run rag:scrape
 npm run rag:generate
-npm run rag:upload
+npm run rag:sync-r2
+npm run deploy  # деплой бота с обновленным ./product-links.json
 ```
