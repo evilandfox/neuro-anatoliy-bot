@@ -20,20 +20,17 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.71",
     "dotenv": "^17.2.3",
-    "drizzle-kit": "^0.31.7",
+    "drizzle-kit": "^0.31.8",
     "html-entities": "^2.6.0",
     "json5": "^2.2.3",
-    "localtunnel": "^2.0.2",
-    "openai": "^5.23.2",
     "sqlite3": "^5.1.7",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "~3.2.0",
-    "wrangler": "^4.50.0"
+    "wrangler": "^4.53.0"
   },
   "dependencies": {
     "@grammyjs/auto-chat-action": "^0.1.1",
-    "@libsql/client": "^0.15.15",
     "drizzle-orm": "^0.44.7",
     "grammy": "^1.38.4"
   }

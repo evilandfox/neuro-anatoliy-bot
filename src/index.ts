@@ -15,12 +15,13 @@ import {
   autoChatAction,
   type AutoChatActionFlavor,
 } from '@grammyjs/auto-chat-action'
-import { Bot, webhookCallback, type Context } from 'grammy'
-import { systemPrompt } from './systemPrompt'
-import { drizzle } from 'drizzle-orm/d1'
-import * as schema from './db/schema'
-import { inArray } from 'drizzle-orm'
-import productLinks from './product-links.json'
+import { Bot, webhookCallback, type Context, InlineKeyboard } from 'grammy'
+import { systemPrompt } from './config/systemPrompt'
+import productLinks from './data/product-links.json'
+
+function getReferral() {
+  return Math.random() > 0.5 ? 2009007717 : 2603169025
+}
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -29,7 +30,19 @@ export default {
     bot.use(autoChatAction())
 
     bot.command('start', async (ctx) => {
-      return ctx.reply('Привет! Я бот, который поможет тебе с твоими проблемами.')
+      const referralLink = `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`
+      const keyboard = new InlineKeyboard().url(
+        'Стать привилегированным клиентом',
+        referralLink
+      )
+
+      return ctx.reply(
+        'Приветствую\\! На связи *дед Анатолий*\\. Я тут помогаю организм в порядок приводить\\. Ты мне просто напиши, что не так — где болит, от чего устал или что улучшить хочешь\\. А я тебе программу составлю и подскажу, чем из Сибирского Здоровья подкрепиться\\. Давай, не тяни, пиши запрос\\.',
+        {
+          parse_mode: 'MarkdownV2',
+          reply_markup: keyboard,
+        }
+      )
     })
 
     bot.on('message', async (ctx) => {
@@ -54,6 +67,7 @@ export default {
           .replace(/\./g, '\\.')
           .replace(/\?/g, '\\?')
           .replace(/-/g, '\\-')
+          .replace('REGISTRATION_LINK', `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`)
 
         const productIds = (text.match(/(?<=\[.+?\]\()\d+(?=\))/g) ?? []).map(
           Number
@@ -62,7 +76,7 @@ export default {
           text = text.replace(/\[(.+?)\]\((.+?)\)/g, (_, name, id) => {
             const link = productLinks[id as keyof typeof productLinks]
             if (link) {
-              const referral = Math.random() > 0.5 ? 2009007717 : 2603169025
+              const referral = getReferral()
               return `[*${name}*](${link}?referral=${referral})`
             }
             return `*${name}*`
@@ -77,7 +91,7 @@ export default {
             },
           })
         } catch (e) {
-          console.error('sendMessage failback', e)
+          console.error(e)
           return ctx.reply(text, {
             parse_mode: 'Markdown',
             link_preview_options: {
