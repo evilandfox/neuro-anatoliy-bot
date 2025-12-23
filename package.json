@@ -30,6 +30,7 @@
     "wrangler": "^4.53.0"
   },
   "dependencies": {
+    "@cloudflare/ai-utils": "^1.0.1",
     "@grammyjs/auto-chat-action": "^0.1.1",
     "drizzle-orm": "^0.44.7",
     "grammy": "^1.38.4"

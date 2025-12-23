@@ -3,8 +3,9 @@
     "wrangler.json": "jsonc"
   },
   "prettier.enable": true,
-"editor.defaultFormatter": "esbenp.prettier-vscode",
-"[typescript]": {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
-}
+  },
+  "editor.tabSize": 2
 }
