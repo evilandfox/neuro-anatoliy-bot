@@ -9,6 +9,7 @@
     "test": "vitest",
     "cf-typegen": "wrangler types",
     "db:studio": "drizzle-kit studio",
+    "db:clear": "tsx scripts/db/clear-d1.ts --force",
     "rag:prepare-db": "tsx scripts/rag/prepare-db.mts",
     "rag:scrape": "tsx scripts/rag/scrape.mts",
     "rag:generate": "tsx scripts/rag/generate.mts",
