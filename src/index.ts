@@ -33,18 +33,18 @@ function escapeMarkdownV2(text: string): string {
 
 function processProductLinks(text: string): string {
   // Replace REGISTRATION_LINK placeholder
-  let processed = text.replace(
+  let processed = text.replaceAll(
     'REGISTRATION_LINK',
     `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`
   )
 
   // Find and replace product links [Name](ID) -> [Name](URL?referral=XXX)
-  const productIds = (processed.match(/(?<=\[.+?\]\()\d+(?=\))/g) ?? []).map(
+  const productIds = (processed.match(/(?<=\[.+?\]\\\()\d+(?=\\\))/g) ?? []).map(
     Number
   )
 
   if (productIds.length > 0) {
-    processed = processed.replace(/\[(.+?)\]\((\d+)\)/g, (_, name, id) => {
+    processed = processed.replace(/\[(.+?)\]\\\((\d+)\\\)/g, (_, name, id) => {
       const link = productLinks[id as keyof typeof productLinks]
       if (link) {
         const referral = getReferral()
@@ -136,6 +136,7 @@ export default {
           history,
           message
         )
+        console.log(chatResponse.response)
 
         // Save messages to session
         await sessionService.addMessage(currentSessionId, 'user', message)
@@ -146,8 +147,8 @@ export default {
         )
 
         // Process response: add product links and escape for Telegram
-        let responseText = processProductLinks(chatResponse.response)
-        responseText = escapeMarkdownV2(responseText)
+        let responseText = escapeMarkdownV2(chatResponse.response)
+        responseText = processProductLinks(responseText)
 
         try {
           return botCtx.reply(responseText, {

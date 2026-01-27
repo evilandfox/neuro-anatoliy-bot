@@ -5,6 +5,8 @@
 import { drizzle } from 'drizzle-orm/libsql'
 import fs from 'node:fs/promises'
 import { URL } from 'node:url'
+import TurndownService from 'turndown'
+import { JSDOM } from 'jsdom'
 import * as s from '../../src/db/schema'
 import { IProductData } from '../../src/types/product'
 
@@ -13,13 +15,29 @@ const db = drizzle('file:./rag/database.db', { schema: s })
 const products = await db.query.products.findMany()
 
 const outputDirUrl = new URL('../../rag/r2-products/', import.meta.url)
+const markdownOutputDirUrl = new URL('../../src/data/', import.meta.url)
+const markdownOutputUrl = new URL('product-markdown.json', markdownOutputDirUrl)
+
+const turndownService = new TurndownService({
+  headingStyle: 'atx',
+  bulletListMarker: '-',
+})
+const markdownById: Record<string, string> = {}
 
 await fs.mkdir(outputDirUrl, { recursive: true })
+await fs.mkdir(markdownOutputDirUrl, { recursive: true })
 
 for (const product of products) {
   const { fileName, htmlContent } = convertProductToHtml(product.data)
   await fs.writeFile(new URL(fileName, outputDirUrl), htmlContent)
+  const markdown = convertHtmlToMarkdown(htmlContent)
+  markdownById[String(product.id)] = markdown
 }
+
+await fs.writeFile(
+  markdownOutputUrl,
+  JSON.stringify(markdownById, null, 2)
+)
 
 function convertProductToHtml(data: IProductData) {
   const { product, feedbackList } = data
@@ -78,4 +96,10 @@ function convertProductToHtml(data: IProductData) {
   </html>`
 
   return { fileName, htmlContent }
+}
+
+function convertHtmlToMarkdown(htmlContent: string): string {
+  const dom = new JSDOM(htmlContent)
+  const markdown = turndownService.turndown(dom.window.document.body)
+  return markdown.trim()
 }

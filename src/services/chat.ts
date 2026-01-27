@@ -1,8 +1,9 @@
 import { runWithTools } from '@cloudflare/ai-utils'
-import { searchProducts, formatProductsForLLM } from './products'
+import { searchProducts, formatProductsForLLM, getProductMarkdown } from './products'
 import type { ChatMessage } from './session'
 
-const MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct'
+const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
+// const MODEL = '@cf/meta/llama-3.1-8b-instruct'
 
 export interface ChatResponse {
   response: string
@@ -22,48 +23,60 @@ export async function runChat(
     { role: 'user', content: userMessage },
   ]
 
-  // Define the product search tool
+  let toolCalled = false
+
   const searchProductsTool = {
     name: 'search_products',
-    description:
-      'Поиск товаров из каталога Сибирского Здоровья. Вызывай когда готов порекомендовать конкретные товары для решения проблемы клиента. Формулируй запрос чётко под проблему.',
+    description: 'Поиск товаров из каталога Сибирского Здоровья',
     parameters: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         query: {
           type: 'string',
-          description:
-            'Поисковый запрос для поиска товаров (например: "витамины для энергии", "поддержка иммунитета", "проблемы со сном")',
+          description: 'Поисковый запрос для поиска товаров',
         },
       },
       required: ['query'],
     },
     function: async (args: { query: string }): Promise<string> => {
+      toolCalled = true
       const results = await searchProducts(ai, args.query)
+      console.log('Search products:', args.query)
+      console.log(JSON.stringify(results, null, 2))
       return formatProductsForLLM(results)
     },
   }
 
-  let toolCalled = false
+  const getProductMarkdownTool = {
+    name: 'get_product_markdown',
+    description: 'Получить полную информацию о товаре по ID',
+    parameters: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'ID товара из каталога',
+        },
+      },
+      required: ['id'],
+    },
+    function: async (args: { id: number }): Promise<string> => {
+      toolCalled = true
+      const productId = Number(args.id)
+      if (!Number.isFinite(productId)) {
+        return 'Некорректный ID товара.'
+      }
+
+      return getProductMarkdown(productId)
+    },
+  }
 
   try {
     const response = await runWithTools(ai, MODEL, {
       messages,
-      tools: [searchProductsTool],
+      tools: [searchProductsTool, getProductMarkdownTool],
     })
 
-    // Check if tool was called
-    if (
-      response &&
-      typeof response === 'object' &&
-      'tool_calls' in response &&
-      Array.isArray(response.tool_calls) &&
-      response.tool_calls.length > 0
-    ) {
-      toolCalled = true
-    }
-
-    // Extract response text
     let responseText = ''
     if (response && typeof response === 'object') {
       if ('response' in response && typeof response.response === 'string') {
