@@ -3,9 +3,9 @@ import { drizzle } from 'drizzle-orm/d1'
 import { notebooks } from '../db/schema'
 import type { ChatMessage } from './session'
 
-const SUMMARIZATION_PROMPT = `Ты — помощник деда Анатолия. Твоя задача — обновить записную книжку о клиенте на основе диалога.
+const SUMMARIZATION_PROMPT = `Ты — помощник консультанта Сибирского Здоровья. Твоя задача — обновить записную книжку о клиенте на основе диалога.
 
-Записная книжка содержит важную информацию о клиенте:
+Записная книжка содержит важную информацию о клиенте, например:
 - Имя, возраст, пол (если известны)
 - Образ жизни, работа
 - Состояние здоровья, жалобы
@@ -39,13 +39,12 @@ export class NotebookService {
 
   async updateNotebook(
     userId: number,
-    sessionMessages: ChatMessage[]
+    sessionMessages: ChatMessage[],
   ): Promise<void> {
     if (sessionMessages.length === 0) return
 
     const oldNotebook = await this.getNotebook(userId)
 
-    // Format dialog for summarization
     const dialogText = sessionMessages
       .map((m) => `${m.role === 'user' ? 'Клиент' : 'Анатолий'}: ${m.content}`)
       .join('\n')
@@ -66,7 +65,7 @@ ${dialogText}
         {
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 500,
-        }
+        },
       )
 
       const newContent =

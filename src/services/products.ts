@@ -25,7 +25,7 @@ export interface ProductSearchResponse {
 
 export async function searchProducts(
   ai: Ai,
-  query: string
+  query: string,
 ): Promise<ProductSearchResponse> {
   const autorag = ai.autorag('syberian-wellness-products')
 
@@ -47,7 +47,7 @@ export async function searchProducts(
 }
 
 function extractProductIdAndName(
-  filename: string
+  filename: string,
 ): { id: string; name: string } | null {
   const match = filename.match(/^\[(\d+)\]\s*(.+?)\.html?$/i)
   if (match) {

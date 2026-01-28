@@ -16,7 +16,8 @@
     "rag:sync-r2": "tsx scripts/rag/sync-r2.mts",
     "rag:refresh-product-links": "tsx scripts/rag/refresh-product-links.mts",
     "tgbot:setWebhookUrl:local": "tsx scripts/tgbot/setWebhookUrl/local.ts",
-    "tgbot:setWebhookUrl:production": "tsx scripts/tgbot/setWebhookUrl/production.ts"
+    "tgbot:setWebhookUrl:production": "tsx scripts/tgbot/setWebhookUrl/production.ts",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.71",
@@ -29,6 +30,7 @@
     "html-entities": "^2.6.0",
     "jsdom": "^24.0.0",
     "json5": "^2.2.3",
+    "patch-package": "^8.0.1",
     "sqlite3": "^5.1.7",
     "tsx": "^4.21.0",
     "turndown": "^7.1.2",

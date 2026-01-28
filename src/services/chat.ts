@@ -1,5 +1,9 @@
 import { runWithTools } from '@cloudflare/ai-utils'
-import { searchProducts, formatProductsForLLM, getProductMarkdown } from './products'
+import {
+  searchProducts,
+  formatProductsForLLM,
+  getProductMarkdown,
+} from './products'
 import type { ChatMessage } from './session'
 
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
@@ -14,9 +18,8 @@ export async function runChat(
   ai: Ai,
   systemPrompt: string,
   history: ChatMessage[],
-  userMessage: string
+  userMessage: string,
 ): Promise<ChatResponse> {
-  // Build messages array
   const messages: { role: string; content: string }[] = [
     { role: 'system', content: systemPrompt },
     ...history.map((m) => ({ role: m.role, content: m.content })),
@@ -42,7 +45,6 @@ export async function runChat(
       toolCalled = true
       const results = await searchProducts(ai, args.query)
       console.log('Search products:', args.query)
-      console.log(JSON.stringify(results, null, 2))
       return formatProductsForLLM(results)
     },
   }
@@ -66,16 +68,24 @@ export async function runChat(
       if (!Number.isFinite(productId)) {
         return 'Некорректный ID товара.'
       }
-
-      return getProductMarkdown(productId)
+      const result = getProductMarkdown(productId)
+      console.log('Get product:', args.id)
+      return result
     },
   }
 
   try {
-    const response = await runWithTools(ai, MODEL, {
-      messages,
-      tools: [searchProductsTool, getProductMarkdownTool],
-    })
+    const response = await runWithTools(
+      ai,
+      MODEL,
+      {
+        messages,
+        tools: [searchProductsTool, getProductMarkdownTool],
+      },
+      {
+        max_tokens: 4096,
+      },
+    )
 
     let responseText = ''
     if (response && typeof response === 'object') {

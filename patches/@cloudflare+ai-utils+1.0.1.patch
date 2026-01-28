@@ -1,0 +1,45 @@
+diff --git a/node_modules/@cloudflare/ai-utils/dist/index.js b/node_modules/@cloudflare/ai-utils/dist/index.js
+index 46ed133..75119c5 100644
+--- a/node_modules/@cloudflare/ai-utils/dist/index.js
++++ b/node_modules/@cloudflare/ai-utils/dist/index.js
+@@ -10824,7 +10824,8 @@ var runWithTools = async (ai, model, input, config = {}) => {
+     maxRecursiveToolRuns = 0,
+     verbose = false,
+     trimFunction = async (tools2, ai2, model2, messages2) => tools2,
+-    strictValidation = false
++    strictValidation = false,
++    max_tokens
+   } = config;
+   if (verbose) {
+     Logger.enableLogging();
+@@ -10858,7 +10859,8 @@ var runWithTools = async (ai, model, input, config = {}) => {
+       const response = await ai2.run(model2, {
+         messages: messages2,
+         stream: false,
+-        tools
++        tools,
++        max_tokens
+       });
+       const chars = JSON.stringify(messages2).length + JSON.stringify(initialtoolsWithoutFunctions).length;
+       totalCharacters += chars;
+@@ -10920,7 +10922,8 @@ var runWithTools = async (ai, model, input, config = {}) => {
+         Logger.info("Max recursive tool runs reached, generating final response");
+         const finalResponse = await ai2.run(model2, {
+           messages: messages2,
+-          stream: streamFinalResponse2
++          stream: streamFinalResponse2,
++          max_tokens
+         });
+         totalCharacters += JSON.stringify(messages2).length;
+         Logger.info(`Number of characters for the final AI.run call: ${JSON.stringify(messages2).length}`);
+diff --git a/node_modules/@cloudflare/ai-utils/dist/runWithTools.d.ts b/node_modules/@cloudflare/ai-utils/dist/runWithTools.d.ts
+index 9727acd..c9375ec 100644
+--- a/node_modules/@cloudflare/ai-utils/dist/runWithTools.d.ts
++++ b/node_modules/@cloudflare/ai-utils/dist/runWithTools.d.ts
+@@ -9,5 +9,6 @@ export declare const runWithTools: (ai: Ai, model: BaseAiTextGenerationModels, i
+     strictValidation?: boolean;
+     verbose?: boolean;
+     trimFunction?: (tools: AiTextGenerationToolInputWithFunction[], ai: Ai, model: BaseAiTextGenerationModels, messages: RoleScopedChatInput[]) => Promise<AiTextGenerationToolInputWithFunction[]>;
++    max_tokens?: number;
+ }) => Promise<AiTextGenerationOutput>;
+ //# sourceMappingURL=runWithTools.d.ts.map
