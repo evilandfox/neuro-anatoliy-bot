@@ -18,4 +18,4 @@ const json = JSON.stringify(
   2
 )
 
-fs.writeFileSync(new URL('../../src/product-links.json', import.meta.url), json)
+fs.writeFileSync(new URL('../../src/data/product-links.json', import.meta.url), json)
