@@ -15,33 +15,38 @@ function getReferral() {
 
 function escapeMarkdownV2(text: string): string {
   return text
-    .replace(/\!/g, '\\!')
-    .replace(/\./g, '\\.')
-    .replace(/\?/g, '\\?')
-    .replace(/-/g, '\\-')
-    .replace(/\(/g, '\\(')
-    .replace(/\)/g, '\\)')
-    .replace(/\=/g, '\\=')
-    .replace(/\+/g, '\\+')
-    .replace(/\#/g, '\\#')
-    .replace(/\>/g, '\\>')
-    .replace(/\</g, '\\<')
-    .replace(/\|/g, '\\|')
-    .replace(/\{/g, '\\{')
-    .replace(/\}/g, '\\}')
+    .replace(/\\?\!/g, '\\!')
+    .replace(/\\?\./g, '\\.')
+    .replace(/\\?\?/g, '\\?')
+    .replace(/\\?-/g, '\\-')
+    .replace(/\\?\(/g, '\\(')
+    .replace(/\\?\)/g, '\\)')
+    .replace(/\\?\=/g, '\\=')
+    .replace(/\\?\+/g, '\\+')
+    .replace(/\\?\#/g, '\\#')
+    .replace(/\\?\>/g, '\\>')
+    .replace(/\\?\</g, '\\<')
+    .replace(/\\?\|/g, '\\|')
+    .replace(/\\?\{/g, '\\{')
+    .replace(/\\?\}/g, '\\}')
 }
 
 function processProductLinks(text: string): string {
-  // Replace REGISTRATION_LINK placeholder
-  let processed = text.replaceAll(
-    'REGISTRATION_LINK',
-    `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`
-  )
+  const registrationLink = `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`
+
+  let processed = text
+    // Convert escaped markdown placeholder link into a real MarkdownV2 link
+    .replace(
+      /\[(.+?)\]\\\(REGISTRATION_LINK\\\)/g,
+      (_, label) => `[${label}](${registrationLink})`,
+    )
+    // Fallback for non-link placeholder usage
+    .replaceAll('REGISTRATION_LINK', escapeMarkdownV2(registrationLink))
 
   // Find and replace product links [Name](ID) -> [Name](URL?referral=XXX)
-  const productIds = (processed.match(/(?<=\[.+?\]\\\()\d+(?=\\\))/g) ?? []).map(
-    Number
-  )
+  const productIds = (
+    processed.match(/(?<=\[.+?\]\\\()\d+(?=\\\))/g) ?? []
+  ).map(Number)
 
   if (productIds.length > 0) {
     processed = processed.replace(/\[(.+?)\]\\\((\d+)\\\)/g, (_, name, id) => {
@@ -69,7 +74,7 @@ export default {
       const referralLink = `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`
       const keyboard = new InlineKeyboard().url(
         'Стать привилегированным клиентом',
-        referralLink
+        referralLink,
       )
 
       return botCtx.reply(
@@ -77,7 +82,7 @@ export default {
         {
           parse_mode: 'MarkdownV2',
           reply_markup: keyboard,
-        }
+        },
       )
     })
 
@@ -101,11 +106,11 @@ export default {
         // Handle session summarization in background if needed
         if (sessionInfo.needsSummarization && sessionInfo.previousSessionId) {
           const previousMessages = await sessionService.getSessionMessages(
-            sessionInfo.previousSessionId
+            sessionInfo.previousSessionId,
           )
           // Run notebook update in background
           ctx.waitUntil(
-            notebookService.updateNotebook(userId, previousMessages)
+            notebookService.updateNotebook(userId, previousMessages),
           )
         }
 
@@ -118,13 +123,14 @@ export default {
         ) {
           currentSessionId = await sessionService.createNewSessionFromOverflow(
             userId,
-            sessionInfo.previousSessionId
+            sessionInfo.previousSessionId,
           )
         }
 
         // Load notebook and session history
         const notebook = await notebookService.getNotebook(userId)
-        const history = await sessionService.getSessionMessages(currentSessionId)
+        const history =
+          await sessionService.getSessionMessages(currentSessionId)
 
         // Build system prompt with notebook
         const systemPrompt = buildSystemPrompt(notebook)
@@ -134,7 +140,7 @@ export default {
           env.AI,
           systemPrompt,
           history,
-          message
+          message,
         )
         console.log(chatResponse.response)
 
@@ -143,29 +149,38 @@ export default {
         await sessionService.addMessage(
           currentSessionId,
           'assistant',
-          chatResponse.response
+          chatResponse.response,
         )
 
         // Process response: add product links and escape for Telegram
         let responseText = escapeMarkdownV2(chatResponse.response)
+        const hasReferralLink = responseText.includes('REGISTRATION_LINK')
+        const keyboard = hasReferralLink
+          ? new InlineKeyboard().url(
+              'Стать привилегированным клиентом',
+              `https://ru.siberianhealth.com/ru/shop/user/registration/PRIVILEGED_CLIENT/?referral=${getReferral()}`,
+            )
+          : undefined
         responseText = processProductLinks(responseText)
 
         try {
-          return botCtx.reply(responseText, {
+          return await botCtx.reply(responseText, {
             parse_mode: 'MarkdownV2',
             link_preview_options: {
               is_disabled: true,
             },
+            reply_markup: keyboard,
           })
         } catch (e) {
           console.error('MarkdownV2 error:', e)
           // Fallback to plain Markdown
           const plainText = processProductLinks(chatResponse.response)
-          return botCtx.reply(plainText, {
+          return await botCtx.reply(plainText, {
             parse_mode: 'Markdown',
             link_preview_options: {
               is_disabled: true,
             },
+            reply_markup: keyboard,
           })
         }
       } catch (error) {
